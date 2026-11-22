@@ -10,7 +10,6 @@ class mesa_ayuda:
         self.tks_matriculapp = sorted(tickets, key=lambda x: x.get('llegada_min', 0))
         self.mu = float(mu)
     def tasa_de_llegadas(self):
-        # si solo hay 1 ticket o ninguno no se puede sacar tasa por intervalo
         total = len(self.tks_matriculapp)
         if total < 2:
             return 0.0
