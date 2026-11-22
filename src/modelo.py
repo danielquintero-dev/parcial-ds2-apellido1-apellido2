@@ -55,13 +55,36 @@ class mesa_de_ayuda:
         cods = []
         for t in self.tks_MatriculaApp:
             cods.append(t['codigo'])
+
         carpeta = os.path.dirname(ruta)
         if carpeta and not os.path.exists(carpeta):
             os.makedirs(carpeta)
-        plt.bar(cods, esperas, label="Espera (min)")
-        plt.title("Espera por ticket - HuilaSoft")
-        plt.xlabel("Ticket")
-        plt.ylabel("Minutos")
-        plt.legend()
-        plt.savefig(ruta)
+
+        prom = sum(esperas) / len(esperas) if esperas else 0
+
+        fig, ax = plt.subplots(figsize=(9, 5), dpi=150)
+        barras = ax.bar(cods, esperas, color="#2563EB", edgecolor="#1E3A8A", width=0.55, zorder=3, label="Tiempo en cola")
+
+        ax.axhline(prom, color="#DC2626", linestyle="--", linewidth=1.5, zorder=4, label=f"Promedio: {prom:.2f} min")
+
+        for b in barras:
+            h = b.get_height()
+            ax.annotate(f"{h:.1f} min",
+                        xy=(b.get_x() + b.get_width() / 2, h),
+                        xytext=(0, 4),
+                        textcoords="offset points",
+                        ha="center", va="bottom",
+                        fontsize=9, fontweight="bold", color="#1F2937")
+
+        ax.set_title("Tiempo de Espera por Ticket en Cola - MatriculaApp (HuilaSoft)", fontsize=12, fontweight="bold", pad=15)
+        ax.set_xlabel("Código del Ticket", fontsize=10, fontweight="bold", labelpad=8)
+        ax.set_ylabel("Tiempo de Espera (minutos)", fontsize=10, fontweight="bold")
+        ax.set_ylim(0, max(esperas) + 1.5 if esperas else 5)
+        ax.grid(axis="y", linestyle=":", alpha=0.6, zorder=0)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.legend(frameon=True, facecolor="#F9FAFB", edgecolor="#D1D5DB")
+
+        plt.tight_layout()
+        plt.savefig(ruta, dpi=150)
         plt.close()
